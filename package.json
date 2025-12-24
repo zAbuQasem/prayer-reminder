@@ -75,6 +75,12 @@
               "Moonsighting Committee Worldwide (also requires shafaq paramteer"
             ],
             "default": 6
+          },
+          "prayerReminder.alertMinutes": {
+            "type": "integer",
+            "default": 20,
+            "minimum": 0,
+            "description": "Minutes before the next prayer to show a notification (0 to disable)."
           }
         }
       }
