@@ -9,6 +9,8 @@ const capitalize = (s) => {
 const until = new Map(),
   timings = new Map();
 
+const alertedBefore = new Set();
+
 const item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 item.tooltip = 'Next prayer';
 
@@ -37,7 +39,14 @@ const updateMaps = async () => {
     month = date.getMonth() + 1,
     year = date.getFullYear();
 
+  const isNewDay = lastDay !== day;
+
   lastDay = day;
+
+  if (isNewDay) {
+    alertedBefore.clear();
+    isPrayerTime = false;
+  }
 
   const url = `http://api.aladhan.com/v1/calendarByCity?city=${capitalize(
     city
@@ -115,9 +124,29 @@ const updateText = () => {
   // get the next prayer's name
   k = until.keys().next().value;
 
+  const timeLeftMs = until.get(k);
+  const alertMinutes = vscode.workspace
+    .getConfiguration('prayerReminder')
+    .get('alertMinutes', 20);
+  const alertThresholdMs = alertMinutes * 60000;
+
   // convert the time left to hours:minutes
-  const hours = Math.floor(until.get(k) / 1000 / 60 / 60);
-  const minutes = Math.floor((until.get(k) / 1000 / 60 / 60 - hours) * 60);
+  const hours = Math.floor(timeLeftMs / 1000 / 60 / 60);
+  const minutes = Math.floor((timeLeftMs / 1000 / 60 / 60 - hours) * 60);
+
+  if (
+    alertMinutes > 0 &&
+    alertThresholdMs > 0 &&
+    !alertedBefore.has(k) &&
+    timeLeftMs > 60000 &&
+    timeLeftMs <= alertThresholdMs
+  ) {
+    alertedBefore.add(k);
+    const roundedMinutes = Math.max(1, Math.round(timeLeftMs / 60000));
+    vscode.window.showInformationMessage(
+      `${roundedMinutes} minutes left for ${k} prayer`
+    );
+  }
 
   // Showing popup on prayer time
   if (hours === 0 && minutes === 0) {

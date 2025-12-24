@@ -6,11 +6,26 @@ Prayer Times is an extension aimed to help you remember your prayers by showing 
 
 ![Screenshot-02](https://i.imgur.com/gsQ8laA.png)
 
+## Installation
+
+### Using VS Code UI
+
+1. Download the latest `prayer-reminder-<version>.vsix` from the Releases page.
+2. In VS Code, open the Command Palette (`Ctrl` + `Shift` + `P` on Windows/Linux, `Cmd` + `Shift` + `P` on macOS).
+3. Run **Extensions: Install from VSIX...** and select the downloaded file.
+
+### Using the CLI
+
+```bash
+code --install-extension path/to/prayer-reminder-<version>.vsix
+```
+
 ## Extension Settings
 
 - `prayerReminder.city`: Enter the city name 'eg. Cairo'.
 - `prayerReminder.country`: Enter the country name 'eg. Egypt'.
 - `prayerReminder.method`: Method of calculating prayer times, more info [here](https://aladhan.com/calculation-methods).
+- `prayerReminder.alertMinutes`: Minutes before the next prayer to show a notification (default is 20; set to 0 to disable the pre-prayer alert).
 
 <!-- ## Release Notes
 
@@ -36,6 +51,12 @@ Users appreciate release notes as you update your extension. -->
 ## 1.0.4
 
 - Introduced stability fixes.
+- Added configurable pre-prayer notifications.
+
+## 1.0.5
+
+- Added release automation workflow for packaging and publishing VSIX.
+- Documented configurable pre-prayer notifications and licensing.
 
 ## Developed by
 
