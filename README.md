@@ -6,6 +6,20 @@ Prayer Times is an extension aimed to help you remember your prayers by showing 
 
 ![Screenshot-02](https://i.imgur.com/gsQ8laA.png)
 
+## Installation
+
+### Using VS Code UI
+
+1. Download the latest `prayer-reminder-<version>.vsix` from the Releases page.
+2. In VS Code, open the Command Palette (`Ctrl` + `Shift` + `P` on Windows/Linux, `Cmd` + `Shift` + `P` on macOS).
+3. Run **Extensions: Install from VSIX...** and select the downloaded file.
+
+### Using the CLI
+
+```bash
+code --install-extension path/to/prayer-reminder-<version>.vsix
+```
+
 ## Extension Settings
 
 - `prayerReminder.city`: Enter the city name 'eg. Cairo'.
