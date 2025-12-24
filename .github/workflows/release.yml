@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
   workflow_dispatch:
     inputs:
       tag:
@@ -14,6 +19,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     permissions:
       contents: write
 
@@ -24,7 +30,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
         with:
-          node-version: 18
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -40,6 +46,16 @@ jobs:
           version=$(node -p "require('./package.json').version")
           echo "version=$version" >> $GITHUB_OUTPUT
           vsce package --no-yarn --out "./artifacts/prayer-reminder-${version}.vsix"
+
+      - name: Select release notes
+        id: notes
+        run: |
+          version="${{ steps.package.outputs.version }}"
+          notes=".github/RELEASE_TEMPLATE.md"
+          if [ -f "RELEASES/${version}.md" ]; then
+            notes="RELEASES/${version}.md"
+          fi
+          echo "path=$notes" >> $GITHUB_OUTPUT
 
       - name: Determine tag
         id: tag
@@ -58,6 +74,6 @@ jobs:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Prayer Reminder ${{ steps.tag.outputs.tag }}
           files: artifacts/*.vsix
-          body_path: .github/RELEASE_TEMPLATE.md
+          body_path: ${{ steps.notes.outputs.path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

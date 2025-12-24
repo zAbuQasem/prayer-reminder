@@ -39,6 +39,11 @@ Users appreciate release notes as you update your extension. -->
 - Introduced stability fixes.
 - Added configurable pre-prayer notifications.
 
+## 1.0.5
+
+- Added release automation workflow for packaging and publishing VSIX.
+- Documented configurable pre-prayer notifications and licensing.
+
 ## Developed by
 
 [Omar AbdulRahman](https://omar45.com/) & [Mohamed Eldeeb](https://github.com/mosamadeeb)

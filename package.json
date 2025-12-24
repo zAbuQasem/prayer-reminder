@@ -3,7 +3,8 @@
   "displayName": "Prayer Reminder",
   "publisher": "OmarAbdulRahman",
   "description": "An extension that reminds you to never forget your prayers",
-  "version": "1.0.4",
+  "license": "MIT",
+  "version": "1.0.5",
   "icon": "pray.png",
   "repository": {
     "type": "git",
