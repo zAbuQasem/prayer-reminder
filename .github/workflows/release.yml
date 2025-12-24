@@ -1,12 +1,9 @@
 name: Release VS Code Extension
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
-      - main
+      - master
     types:
       - closed
   workflow_dispatch:
