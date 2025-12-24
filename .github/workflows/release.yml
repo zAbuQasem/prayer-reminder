@@ -1,0 +1,63 @@
+name: Release VS Code Extension
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag name to use for the release (default: v<package version>)"
+        required: false
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install VSCE
+        run: npm install -g @vscode/vsce
+
+      - name: Package extension
+        id: package
+        run: |
+          mkdir -p artifacts
+          version=$(node -p "require('./package.json').version")
+          echo "version=$version" >> $GITHUB_OUTPUT
+          vsce package --no-yarn --out "./artifacts/prayer-reminder-${version}.vsix"
+
+      - name: Determine tag
+        id: tag
+        run: |
+          input_tag="${{ github.event.inputs.tag || '' }}"
+          if [ -z "$input_tag" ]; then
+            tag="v${{ steps.package.outputs.version }}"
+          else
+            tag="$input_tag"
+          fi
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Prayer Reminder ${{ steps.tag.outputs.tag }}
+          files: artifacts/*.vsix
+          body_path: .github/RELEASE_TEMPLATE.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
