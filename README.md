@@ -11,6 +11,7 @@ Prayer Times is an extension aimed to help you remember your prayers by showing 
 - `prayerReminder.city`: Enter the city name 'eg. Cairo'.
 - `prayerReminder.country`: Enter the country name 'eg. Egypt'.
 - `prayerReminder.method`: Method of calculating prayer times, more info [here](https://aladhan.com/calculation-methods).
+- `prayerReminder.alertMinutes`: Minutes before the next prayer to show a notification (default is 20; set to 0 to disable the pre-prayer alert).
 
 <!-- ## Release Notes
 
@@ -36,6 +37,7 @@ Users appreciate release notes as you update your extension. -->
 ## 1.0.4
 
 - Introduced stability fixes.
+- Added configurable pre-prayer notifications.
 
 ## Developed by
 
