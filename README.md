@@ -25,6 +25,7 @@ code --install-extension path/to/prayer-reminder-<version>.vsix
 - `prayerReminder.city`: Enter the city name 'eg. Cairo'.
 - `prayerReminder.country`: Enter the country name 'eg. Egypt'.
 - `prayerReminder.method`: Method of calculating prayer times, more info [here](https://aladhan.com/calculation-methods).
+- `prayerReminder.refreshIntervalMinutes`: Minutes between automatic refreshes (default 5 minutes).
 - `prayerReminder.alertMinutes`: Minutes before the next prayer to show a notification (default is 20; set to 0 to disable the pre-prayer alert).
 
 <!-- ## Release Notes
@@ -57,6 +58,12 @@ Users appreciate release notes as you update your extension. -->
 
 - Added release automation workflow for packaging and publishing VSIX.
 - Documented configurable pre-prayer notifications and licensing.
+
+## 1.0.6
+
+- Added configurable auto-refresh interval (default 5 minutes) for prayer time updates.
+- After the final prayer of the day, the status now counts down to the next day's Fajr.
+- Improved reliability with HTTPS API calls and clearer error logging.
 
 ## Developed by
 

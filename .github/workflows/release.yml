@@ -1,9 +1,12 @@
 name: Release VS Code Extension
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
-      - master
+      - main
     types:
       - closed
   workflow_dispatch:
@@ -58,11 +61,8 @@ jobs:
         id: tag
         run: |
           input_tag="${{ github.event.inputs.tag || '' }}"
-          if [ -z "$input_tag" ]; then
-            tag="v${{ steps.package.outputs.version }}"
-          else
-            tag="$input_tag"
-          fi
+          package_version="${{ steps.package.outputs.version }}"
+          tag="${input_tag:-v${package_version}}"
           echo "tag=$tag" >> $GITHUB_OUTPUT
 
       - name: Create GitHub release
