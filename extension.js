@@ -124,6 +124,8 @@ const updateMaps = async () => {
   const day = date.getDate();
   const isNewDay = lastDay !== day;
 
+  const isNewDay = lastDay !== day;
+
   lastDay = day;
 
   if (isNewDay) {
