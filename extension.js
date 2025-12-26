@@ -19,6 +19,8 @@ const until = new Map(),
   timings = new Map();
 
 const alertedBefore = new Set();
+const minuteAlerts = new Map();
+let baseRefreshIntervalMs = 300000;
 let refreshIntervalMs = 300000;
 let refreshTimer;
 const output = vscode.window.createOutputChannel('Prayer Reminder');
@@ -113,17 +115,17 @@ const addUpcomingTimings = (prayers, baseDate) => {
 const updateMaps = async () => {
   until.clear();
   timings.clear();
+  minuteAlerts.clear();
 
   const { city, country, method, refreshIntervalMinutes } = getExtensionConfig();
-  refreshIntervalMs = Math.max(1, Number(refreshIntervalMinutes) || 5) * 60000;
+  baseRefreshIntervalMs = Math.max(1, Number(refreshIntervalMinutes) || 5) * 60000;
+  refreshIntervalMs = baseRefreshIntervalMs;
   output.appendLine(
     `Prayer Reminder: Refreshing timings for ${city}, ${country} using method ${method}.`
   );
 
   const date = new Date();
   const day = date.getDate();
-  const isNewDay = lastDay !== day;
-
   const isNewDay = lastDay !== day;
 
   lastDay = day;
@@ -213,6 +215,16 @@ const updateText = () => {
   // convert the time left to hours:minutes
   const hours = Math.floor(timeLeftMs / 1000 / 60 / 60);
   const minutes = Math.floor((timeLeftMs / 1000 / 60 / 60 - hours) * 60);
+  const roundedMinutes = Math.max(0, Math.round(timeLeftMs / 60000));
+
+  const targetInterval =
+    roundedMinutes <= 10
+      ? Math.min(60000, baseRefreshIntervalMs)
+      : baseRefreshIntervalMs;
+  if (targetInterval !== refreshIntervalMs) {
+    refreshIntervalMs = targetInterval;
+    restartRefreshTimer();
+  }
 
   if (
     alertMinutes > 0 &&
@@ -222,14 +234,25 @@ const updateText = () => {
     timeLeftMs <= alertThresholdMs
   ) {
     alertedBefore.add(k);
-    const roundedMinutes = Math.max(1, Math.round(timeLeftMs / 60000));
     vscode.window.showInformationMessage(
       `${roundedMinutes} minutes left for ${k} prayer`
     );
   }
 
+  if (roundedMinutes > 0 && roundedMinutes <= 10) {
+    const lastMinuteAlert = minuteAlerts.get(k);
+    if (lastMinuteAlert !== roundedMinutes) {
+      minuteAlerts.set(k, roundedMinutes);
+      vscode.window.showInformationMessage(
+        `${roundedMinutes} minutes left for ${k} prayer`
+      );
+      output.appendLine(`Prayer Reminder: ${roundedMinutes} minutes left for ${k}.`);
+    }
+  }
+
   // Showing popup on prayer time
   if (hours === 0 && minutes === 0) {
+    minuteAlerts.delete(k);
     if (!isPrayerTime) {
       // Store some state so this shows only once and then resets
       isPrayerTime = true;
@@ -258,11 +281,11 @@ const updateText = () => {
     item.text = `\$(watch) ${k} in ${hours}h ${minutes}m`;
 
     // Changing background color
-    if (hours === 0 && minutes <= 10 && minutes > 5) {
+    if (hours === 0 && minutes <= 20 && minutes > 10) {
       item.backgroundColor = new vscode.ThemeColor(
         'statusBarItem.warningBackground'
       );
-    } else if (hours === 0 && minutes <= 5) {
+    } else if (hours === 0 && minutes <= 10) {
       item.backgroundColor = new vscode.ThemeColor(
         'statusBarItem.errorBackground'
       );
@@ -301,6 +324,7 @@ const refreshTick = async () => {
 
   if (until.get(k) - refreshIntervalMs < 0) {
     until.delete(k);
+    minuteAlerts.delete(k);
     if (until.size === 0) endOfDay = true;
   } else {
     until.set(k, until.get(k) - refreshIntervalMs);

@@ -64,6 +64,7 @@ Users appreciate release notes as you update your extension. -->
 - Added configurable auto-refresh interval (default 5 minutes) for prayer time updates.
 - After the final prayer of the day, the status now counts down to the next day's Fajr.
 - Improved reliability with HTTPS API calls and clearer error logging.
+- Color warnings now start at 20 minutes before prayer, with minute-by-minute alerts in the final 10 minutes.
 
 ## Developed by
 
